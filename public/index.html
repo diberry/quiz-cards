@@ -1,121 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Study Cards</title>
-  <link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-  <!-- Nav bar -->
-  <header class="app-header">
-    <div class="header-inner">
-      <span class="app-logo">🗂️ Study Cards</span>
-      <nav class="app-nav" id="app-nav">
-        <button class="nav-btn" data-view="decks">My Decks</button>
-        <button class="nav-btn" data-view="history">History</button>
-      </nav>
-      <div class="auth-area" id="auth-area">
-        <button class="btn btn-primary" id="btn-login">Sign in</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main content -->
-  <main class="app-main" id="app-main">
-
-    <!-- Landing / loading -->
-    <section id="view-landing" class="view active">
-      <div class="landing-hero">
-        <h1>Study smarter</h1>
-        <p>Create decks, flip cards, and quiz yourself.<br>Sign in to get started.</p>
-        <button class="btn btn-primary btn-lg" id="btn-login-hero">Sign in</button>
-      </div>
-    </section>
-
-    <!-- My Decks -->
-    <section id="view-decks" class="view">
-      <div class="view-header">
-        <h2>My Decks</h2>
-        <button class="btn btn-primary" id="btn-new-deck">+ New Deck</button>
-      </div>
-      <div id="deck-list" class="deck-grid"></div>
-    </section>
-
-    <!-- Deck detail / card list -->
-    <section id="view-deck-detail" class="view">
-      <button class="btn btn-ghost back-btn" data-view="decks">← Back</button>
-      <div class="view-header">
-        <h2 id="deck-detail-title"></h2>
-        <div class="btn-group">
-          <button class="btn btn-secondary" id="btn-study-mode">Study</button>
-          <button class="btn btn-primary" id="btn-quiz-mode">Quiz</button>
-          <button class="btn btn-ghost" id="btn-import-deck">Import</button>
-          <button class="btn btn-ghost" id="btn-add-card">+ Card</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Cards</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <!-- Nav bar -->
+    <header class="app-header">
+      <div class="header-inner">
+        <span class="app-logo">🗂️ Study Cards</span>
+        <nav class="app-nav" id="app-nav">
+          <button class="nav-btn" data-view="decks">My Decks</button>
+          <button class="nav-btn" data-view="history">History</button>
+        </nav>
+        <div class="auth-area" id="auth-area">
+          <button class="btn btn-primary" id="btn-login">Sign in</button>
         </div>
       </div>
-      <div id="card-list" class="card-list"></div>
-    </section>
+    </header>
 
-    <!-- Study (flip) mode -->
-    <section id="view-study" class="view">
-      <button class="btn btn-ghost back-btn" id="btn-back-from-study">← Back</button>
-      <div class="study-header">
-        <span id="study-progress"></span>
-        <span id="study-deck-title"></span>
-      </div>
-      <div class="flashcard-container" id="flashcard-container">
-        <div class="flashcard" id="flashcard">
-          <div class="flashcard-inner">
-            <div class="flashcard-front" id="card-front"></div>
-            <div class="flashcard-back" id="card-back"></div>
+    <!-- Main content -->
+    <main class="app-main" id="app-main">
+      <!-- Landing / loading -->
+      <section id="view-landing" class="view active">
+        <div class="landing-hero">
+          <h1>Study smarter</h1>
+          <p>Create decks, flip cards, and quiz yourself.<br />Sign in to get started.</p>
+          <button class="btn btn-primary btn-lg" id="btn-login-hero">Sign in</button>
+        </div>
+      </section>
+
+      <!-- My Decks -->
+      <section id="view-decks" class="view">
+        <div class="view-header">
+          <h2>My Decks</h2>
+          <button class="btn btn-primary" id="btn-new-deck">+ New Deck</button>
+        </div>
+        <div id="deck-list" class="deck-grid"></div>
+      </section>
+
+      <!-- Deck detail / card list -->
+      <section id="view-deck-detail" class="view">
+        <button class="btn btn-ghost back-btn" data-view="decks">← Back</button>
+        <div class="view-header">
+          <h2 id="deck-detail-title"></h2>
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="btn-study-mode">Study</button>
+            <button class="btn btn-primary" id="btn-quiz-mode">Quiz</button>
+            <button class="btn btn-ghost" id="btn-import-deck">Import</button>
+            <button class="btn btn-ghost" id="btn-add-card">+ Card</button>
           </div>
         </div>
-        <p class="flip-hint">Tap card to flip</p>
-      </div>
-      <div class="study-controls">
-        <button class="btn btn-ghost" id="btn-prev-card">← Prev</button>
-        <button class="btn btn-ghost" id="btn-next-card">Next →</button>
-      </div>
-    </section>
+        <div id="card-list" class="card-list"></div>
+      </section>
 
-    <!-- Quiz mode -->
-    <section id="view-quiz" class="view">
-      <button class="btn btn-ghost back-btn" id="btn-back-from-quiz">← Back</button>
-      <div id="quiz-body"></div>
-    </section>
+      <!-- Study (flip) mode -->
+      <section id="view-study" class="view">
+        <button class="btn btn-ghost back-btn" id="btn-back-from-study">← Back</button>
+        <div class="study-header">
+          <span id="study-progress"></span>
+          <span id="study-deck-title"></span>
+        </div>
+        <div class="flashcard-container" id="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-inner">
+              <div class="flashcard-front" id="card-front"></div>
+              <div class="flashcard-back" id="card-back"></div>
+            </div>
+          </div>
+          <p class="flip-hint">Tap card to flip</p>
+        </div>
+        <div class="study-controls">
+          <button class="btn btn-ghost" id="btn-prev-card">← Prev</button>
+          <button class="btn btn-ghost" id="btn-next-card">Next →</button>
+        </div>
+      </section>
 
-    <!-- Import -->
-    <section id="view-import" class="view">
-      <button class="btn btn-ghost back-btn" id="btn-back-from-import">← Back</button>
-      <h2>Import Cards</h2>
-      <div id="import-body"></div>
-    </section>
+      <!-- Quiz mode -->
+      <section id="view-quiz" class="view">
+        <button class="btn btn-ghost back-btn" id="btn-back-from-quiz">← Back</button>
+        <div id="quiz-body"></div>
+      </section>
 
-    <!-- History -->
-    <section id="view-history" class="view">
-      <h2>Study History</h2>
-      <div id="history-body"></div>
-    </section>
+      <!-- Import -->
+      <section id="view-import" class="view">
+        <button class="btn btn-ghost back-btn" id="btn-back-from-import">← Back</button>
+        <h2>Import Cards</h2>
+        <div id="import-body"></div>
+      </section>
 
-  </main>
+      <!-- History -->
+      <section id="view-history" class="view">
+        <h2>Study History</h2>
+        <div id="history-body"></div>
+      </section>
+    </main>
 
-  <!-- Modal overlay -->
-  <div class="modal-overlay" id="modal-overlay" hidden>
-    <div class="modal" id="modal">
-      <h3 id="modal-title"></h3>
-      <div id="modal-body"></div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
-        <button class="btn btn-primary" id="modal-confirm">Save</button>
+    <!-- Modal overlay -->
+    <div class="modal-overlay" id="modal-overlay" hidden>
+      <div class="modal" id="modal">
+        <h3 id="modal-title"></h3>
+        <div id="modal-body"></div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+          <button class="btn btn-primary" id="modal-confirm">Save</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Toast notification -->
-  <div class="toast" id="toast" hidden></div>
+    <!-- Toast notification -->
+    <div class="toast" id="toast" hidden></div>
 
-  <!-- App modules (ES modules) -->
-  <script type="module" src="/js/app.js"></script>
-</body>
+    <!-- App modules (ES modules) -->
+    <script type="module" src="/js/app.js"></script>
+  </body>
 </html>

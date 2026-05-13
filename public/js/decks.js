@@ -4,7 +4,9 @@ import { apiFetch, showView, showToast, openModal, closeModal } from './app.js';
 import { renderCards } from './cards.js';
 
 let currentDeckId = null;
-export function getCurrentDeckId() { return currentDeckId; }
+export function getCurrentDeckId() {
+  return currentDeckId;
+}
 
 export async function renderDecks() {
   const container = document.getElementById('deck-list');
@@ -27,7 +29,9 @@ export async function renderDecks() {
     return;
   }
 
-  container.innerHTML = decks.map(deck => `
+  container.innerHTML = decks
+    .map(
+      (deck) => `
     <div class="deck-card" data-id="${deck.id}">
       <div class="deck-card-title">${esc(deck.title)}</div>
       ${deck.description ? `<div class="deck-card-meta">${esc(deck.description)}</div>` : ''}
@@ -38,16 +42,31 @@ export async function renderDecks() {
         <button class="btn btn-ghost btn-delete" data-id="${deck.id}" data-title="${esc(deck.title)}">Delete</button>
       </div>
     </div>
-  `).join('');
+  `,
+    )
+    .join('');
 
-  container.querySelectorAll('.btn-open').forEach(btn =>
-    btn.addEventListener('click', e => { e.stopPropagation(); openDeck(btn.dataset.id); }));
-  container.querySelectorAll('.deck-card').forEach(card =>
-    card.addEventListener('click', () => openDeck(card.dataset.id)));
-  container.querySelectorAll('.btn-edit').forEach(btn =>
-    btn.addEventListener('click', e => { e.stopPropagation(); editDeck(btn.dataset.id, btn.dataset.title, btn.dataset.desc); }));
-  container.querySelectorAll('.btn-delete').forEach(btn =>
-    btn.addEventListener('click', e => { e.stopPropagation(); deleteDeck(btn.dataset.id, btn.dataset.title); }));
+  container.querySelectorAll('.btn-open').forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDeck(btn.dataset.id);
+    }),
+  );
+  container
+    .querySelectorAll('.deck-card')
+    .forEach((card) => card.addEventListener('click', () => openDeck(card.dataset.id)));
+  container.querySelectorAll('.btn-edit').forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      editDeck(btn.dataset.id, btn.dataset.title, btn.dataset.desc);
+    }),
+  );
+  container.querySelectorAll('.btn-delete').forEach((btn) =>
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteDeck(btn.dataset.id, btn.dataset.title);
+    }),
+  );
 }
 
 async function openDeck(deckId) {
@@ -55,7 +74,9 @@ async function openDeck(deckId) {
   let deck;
   try {
     deck = await apiFetch(`/api/decks/${deckId}`);
-  } catch { return; }
+  } catch {
+    return;
+  }
 
   document.getElementById('deck-detail-title').textContent = deck.title;
   showView('deck-detail');
@@ -65,16 +86,16 @@ async function openDeck(deckId) {
 
 function wireDetailButtons(deckId) {
   document.getElementById('btn-study-mode').onclick = () => {
-    import('./cards.js').then(m => m.startStudy(deckId));
+    import('./cards.js').then((m) => m.startStudy(deckId));
   };
   document.getElementById('btn-quiz-mode').onclick = () => {
-    import('./quiz.js').then(m => m.startQuiz(deckId));
+    import('./quiz.js').then((m) => m.startQuiz(deckId));
   };
   document.getElementById('btn-import-deck').onclick = () => {
-    import('./import.js').then(m => m.showImport(deckId));
+    import('./import.js').then((m) => m.showImport(deckId));
   };
   document.getElementById('btn-add-card').onclick = () => {
-    import('./cards.js').then(m => m.addCard(deckId));
+    import('./cards.js').then((m) => m.addCard(deckId));
   };
 }
 
@@ -160,5 +181,9 @@ document.getElementById('btn-new-deck').addEventListener('click', async () => {
 });
 
 function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

@@ -25,7 +25,9 @@ export async function renderCards(deckId) {
     return;
   }
 
-  container.innerHTML = cards.map((card, i) => `
+  container.innerHTML = cards
+    .map(
+      (card, i) => `
     <div class="card-item">
       <div class="card-item-content">
         <div class="card-term">${esc(card.term)}</div>
@@ -37,12 +39,28 @@ export async function renderCards(deckId) {
         <button class="btn btn-ghost btn-delete-card" data-id="${card.id}" data-deck="${deckId}">✕</button>
       </div>
     </div>
-  `).join('');
+  `,
+    )
+    .join('');
 
-  container.querySelectorAll('.btn-edit-card').forEach(btn =>
-    btn.addEventListener('click', () => editCard(btn.dataset.deck, btn.dataset.id, btn.dataset.term, btn.dataset.def, btn.dataset.pos)));
-  container.querySelectorAll('.btn-delete-card').forEach(btn =>
-    btn.addEventListener('click', () => deleteCard(btn.dataset.deck, btn.dataset.id)));
+  container
+    .querySelectorAll('.btn-edit-card')
+    .forEach((btn) =>
+      btn.addEventListener('click', () =>
+        editCard(
+          btn.dataset.deck,
+          btn.dataset.id,
+          btn.dataset.term,
+          btn.dataset.def,
+          btn.dataset.pos,
+        ),
+      ),
+    );
+  container
+    .querySelectorAll('.btn-delete-card')
+    .forEach((btn) =>
+      btn.addEventListener('click', () => deleteCard(btn.dataset.deck, btn.dataset.id)),
+    );
 }
 
 // ---------- Add / Edit / Delete ----------
@@ -60,10 +78,15 @@ export async function addCard(deckId) {
   if (!term || !definition) return showToast('Term and definition are required');
 
   try {
-    await apiFetch(`/api/cards/${deckId}`, { method: 'POST', body: JSON.stringify({ term, definition }) });
+    await apiFetch(`/api/cards/${deckId}`, {
+      method: 'POST',
+      body: JSON.stringify({ term, definition }),
+    });
     showToast('Card added');
     renderCards(deckId);
-  } catch (err) { showToast(err.message); }
+  } catch (err) {
+    showToast(err.message);
+  }
 }
 
 async function editCard(deckId, cardId, term, definition, position) {
@@ -85,7 +108,9 @@ async function editCard(deckId, cardId, term, definition, position) {
     });
     showToast('Card saved');
     renderCards(deckId);
-  } catch (err) { showToast(err.message); }
+  } catch (err) {
+    showToast(err.message);
+  }
 }
 
 async function deleteCard(deckId, cardId) {
@@ -100,7 +125,9 @@ async function deleteCard(deckId, cardId) {
     await apiFetch(`/api/cards/${deckId}/${cardId}`, { method: 'DELETE' });
     showToast('Card deleted');
     renderCards(deckId);
-  } catch (err) { showToast(err.message); }
+  } catch (err) {
+    showToast(err.message);
+  }
 }
 
 function cardFormHtml(term, definition) {
@@ -129,7 +156,10 @@ export async function startStudy(deckId) {
   let cards;
   try {
     cards = await apiFetch(`/api/cards/${deckId}`);
-  } catch (err) { showToast(err.message); return; }
+  } catch (err) {
+    showToast(err.message);
+    return;
+  }
 
   if (cards.length === 0) return showToast('No cards in this deck');
 
@@ -155,7 +185,8 @@ function renderStudyCard() {
   const card = studyCards[studyIndex];
   document.getElementById('card-front').textContent = card.term;
   document.getElementById('card-back').textContent = card.definition;
-  document.getElementById('study-progress').textContent = `${studyIndex + 1} / ${studyCards.length}`;
+  document.getElementById('study-progress').textContent =
+    `${studyIndex + 1} / ${studyCards.length}`;
   // Reset flip
   document.getElementById('flashcard').classList.remove('flipped');
 }
@@ -185,9 +216,15 @@ async function saveStudySession() {
       method: 'POST',
       body: JSON.stringify({ cardsReviewed: studyIndex + 1, durationSeconds }),
     });
-  } catch { /* non-critical */ }
+  } catch {
+    /* non-critical */
+  }
 }
 
 function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

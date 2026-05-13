@@ -1,12 +1,10 @@
-'use strict';
-
-const path = require('path');
-const { DatabaseSync } = require('node:sqlite');
+import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'quiz-cards.db');
-let db;
+let db: DatabaseSync | null = null;
 
-function getDb() {
+export function getDb(): DatabaseSync {
   if (!db) {
     db = new DatabaseSync(DB_PATH);
     db.exec('PRAGMA journal_mode = WAL');
@@ -15,7 +13,7 @@ function getDb() {
   return db;
 }
 
-function initDb() {
+export function initDb(): void {
   const database = getDb();
 
   database.exec(`
@@ -66,4 +64,7 @@ function initDb() {
   console.log('Database ready:', DB_PATH);
 }
 
-module.exports = { getDb, initDb };
+// For testing: allow resetting the db instance
+export function setDb(newDb: DatabaseSync | null): void {
+  db = newDb;
+}
