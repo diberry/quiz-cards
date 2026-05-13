@@ -1,0 +1,11 @@
+name: quiz-cards
+metadata:
+  template: quiz-cards@0.0.1
+services:
+  app:
+    project: .
+    host: containerapp
+    language: js
+    docker:
+      path: Dockerfile
+      context: .

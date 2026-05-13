@@ -1,0 +1,10 @@
+{
+  "containerApps": "ca",
+  "containerAppsEnvironment": "cae",
+  "containerRegistry": "cr",
+  "logAnalyticsWorkspace": "log",
+  "managedIdentity": "id",
+  "resourceGroup": "rg",
+  "storageAccount": "st",
+  "fileShare": "fs"
+}

@@ -15,3 +15,6 @@ Thumbs.db
 
 # Docker
 .dockerignore
+
+# Azure Developer CLI
+.azure/

@@ -79,7 +79,46 @@ docker build -t quiz-cards .
 docker run -p 3000:3000 -v $(pwd)/data:/app/data --env-file .env quiz-cards
 ```
 
-## Deploy to Azure Container Apps
+## Deploy to Azure (azd)
+
+The fastest way to deploy is with the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/):
+
+### Prerequisites
+
+- Azure subscription
+- [Azure Developer CLI (azd)](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd)
+- [Docker](https://docs.docker.com/get-docker/)
+
+### Deploy
+
+```bash
+# Initialize the environment (first time only)
+azd init
+
+# Set required environment variables
+azd env set ENTRA_CLIENT_ID <your-client-id>
+azd env set ENTRA_TENANT_ID <your-tenant-id>
+azd env set REDIRECT_URI https://<your-app-url>
+
+# Provision infrastructure + build + deploy
+azd up
+```
+
+### What gets deployed
+
+- **Azure Container Apps** — runs the quiz-cards container (0.5 CPU, 1Gi, 1–3 replicas)
+- **Azure Container Registry** — stores the Docker image
+- **Azure Files** — persistent storage for SQLite at `/app/data`
+- **Log Analytics** — container logs and diagnostics
+- **Managed Identity** — secure registry pull (no passwords)
+
+### Tear down
+
+```bash
+azd down
+```
+
+### Manual deployment (alternative)
 
 ```bash
 az acr build --registry <your-acr> --image quiz-cards:latest .
