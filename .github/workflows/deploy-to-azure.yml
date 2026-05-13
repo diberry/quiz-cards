@@ -1,7 +1,9 @@
 name: Deploy to Azure
 
 on:
-  push:
+  workflow_run:
+    workflows: ['Build & Test']
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -10,6 +12,8 @@ permissions: {}
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       id-token: write
       contents: read
@@ -47,6 +51,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: build-and-push
     environment: production
     permissions:
@@ -60,9 +65,46 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Capture current image for rollback
+        id: previous
+        run: |
+          CURRENT_IMAGE=$(az containerapp show \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --query "properties.template.containers[0].image" -o tsv 2>/dev/null || echo "")
+          echo "image=$CURRENT_IMAGE" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to Container App
         run: |
           az containerapp update \
             --name ${{ secrets.CONTAINER_APP_NAME }} \
             --resource-group ${{ secrets.RESOURCE_GROUP }} \
             --image ${{ needs.build-and-push.outputs.image-tag }}
+
+      - name: Verify deployment health
+        run: |
+          APP_URL=$(az containerapp show \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --query "properties.configuration.ingress.fqdn" -o tsv)
+          echo "Checking health at https://$APP_URL/health"
+          for i in 1 2 3 4 5 6; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://$APP_URL/health" || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "⏳ Attempt $i: status=$STATUS, retrying in 10s..."
+            sleep 10
+          done
+          echo "❌ Health check failed after 6 attempts"
+          exit 1
+
+      - name: Rollback on failure
+        if: failure() && steps.previous.outputs.image != ''
+        run: |
+          echo "⚠️ Rolling back to previous image: ${{ steps.previous.outputs.image }}"
+          az containerapp update \
+            --name ${{ secrets.CONTAINER_APP_NAME }} \
+            --resource-group ${{ secrets.RESOURCE_GROUP }} \
+            --image ${{ steps.previous.outputs.image }}

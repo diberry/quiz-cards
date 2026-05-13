@@ -265,6 +265,12 @@ app.get('/auth/me', (req: Request, res: Response) => {
   }
 });
 
+// --- Health endpoint (for deployment verification) ---
+
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // --- API routes ---
 
 app.use('/api/decks', decksRouter);
