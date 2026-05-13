@@ -53,12 +53,18 @@ function renderQuizQuestion() {
   const submitBtn = document.getElementById('btn-submit-answer');
 
   input.focus();
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') checkAnswer();
+  });
   submitBtn.addEventListener('click', checkAnswer);
 }
 
 function normalise(str) {
-  return String(str || '').toLowerCase().replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim();
+  return String(str || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function checkAnswer() {
@@ -112,7 +118,9 @@ async function renderQuizResults() {
     </div>`;
 
   document.getElementById('btn-retake').addEventListener('click', () => startQuiz(quizDeckId));
-  document.getElementById('btn-back-to-deck').addEventListener('click', () => showView('deck-detail'));
+  document
+    .getElementById('btn-back-to-deck')
+    .addEventListener('click', () => showView('deck-detail'));
 
   // Save score
   try {
@@ -120,16 +128,22 @@ async function renderQuizResults() {
       method: 'POST',
       body: JSON.stringify({ score: quizScore, total }),
     });
-  } catch { /* non-critical */ }
+  } catch {
+    /* non-critical */
+  }
 }
 
 function resultMessage(pct) {
   if (pct === 100) return '🎉 Perfect score!';
   if (pct >= 80) return '💪 Great work!';
   if (pct >= 60) return '📚 Keep studying!';
-  return '🔄 Keep practicing — you\'ll get it!';
+  return "🔄 Keep practicing — you'll get it!";
 }
 
 function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

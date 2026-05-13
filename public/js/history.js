@@ -32,9 +32,10 @@ export async function renderHistory() {
     section.className = 'history-section';
     section.innerHTML = `
       <h3>Quiz Results</h3>
-      ${quizSessions.map(s => {
-        const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
-        return `
+      ${quizSessions
+        .map((s) => {
+          const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
+          return `
           <div class="history-item">
             <div>
               <div class="history-deck">${esc(s.deck_title)}</div>
@@ -42,7 +43,8 @@ export async function renderHistory() {
             </div>
             <div class="history-score">${pct}% &nbsp; (${s.score}/${s.total})</div>
           </div>`;
-      }).join('')}`;
+        })
+        .join('')}`;
     body.appendChild(section);
   }
 
@@ -51,14 +53,18 @@ export async function renderHistory() {
     section.className = 'history-section';
     section.innerHTML = `
       <h3>Study Sessions</h3>
-      ${studySessions.map(s => `
+      ${studySessions
+        .map(
+          (s) => `
         <div class="history-item">
           <div>
             <div class="history-deck">${esc(s.deck_title)}</div>
             <div class="history-meta">${formatDate(s.studied_at)}</div>
           </div>
           <div class="history-score">${s.cards_reviewed} card${s.cards_reviewed !== 1 ? 's' : ''} · ${formatDuration(s.duration_seconds)}</div>
-        </div>`).join('')}`;
+        </div>`,
+        )
+        .join('')}`;
     body.appendChild(section);
   }
 }
@@ -74,5 +80,9 @@ function formatDuration(seconds) {
 }
 
 function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

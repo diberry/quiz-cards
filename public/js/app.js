@@ -20,11 +20,13 @@ export function showToast(message, duration = 3000) {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.hidden = false;
-  setTimeout(() => { toast.hidden = true; }, duration);
+  setTimeout(() => {
+    toast.hidden = true;
+  }, duration);
 }
 
 export function showView(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view').forEach((v) => v.classList.remove('active'));
   const el = document.getElementById(`view-${viewId}`);
   if (el) {
     el.classList.add('active');
@@ -41,12 +43,17 @@ export function openModal({ title, bodyHtml, confirmLabel = 'Save' }) {
   document.getElementById('modal-body').innerHTML = bodyHtml;
   document.getElementById('modal-confirm').textContent = confirmLabel;
   document.getElementById('modal-overlay').hidden = false;
-  return new Promise(resolve => { modalResolve = resolve; });
+  return new Promise((resolve) => {
+    modalResolve = resolve;
+  });
 }
 
 export function closeModal(result = null) {
   document.getElementById('modal-overlay').hidden = true;
-  if (modalResolve) { modalResolve(result); modalResolve = null; }
+  if (modalResolve) {
+    modalResolve(result);
+    modalResolve = null;
+  }
 }
 
 // ---------- Auth UI ----------
@@ -82,16 +89,19 @@ async function handleLogin() {
     login(available[0][0]);
   } else if (available.length > 1) {
     // Show provider picker
-    const buttons = available.map(([name]) =>
-      `<button class="btn btn-secondary provider-btn" data-provider="${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</button>`
-    ).join('');
+    const buttons = available
+      .map(
+        ([name]) =>
+          `<button class="btn btn-secondary provider-btn" data-provider="${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</button>`,
+      )
+      .join('');
     document.getElementById('view-landing').innerHTML = `
       <div class="landing-hero">
         <h1>Sign in</h1>
         <p>Choose a provider:</p>
         <div class="provider-list">${buttons}</div>
       </div>`;
-    document.querySelectorAll('.provider-btn').forEach(btn => {
+    document.querySelectorAll('.provider-btn').forEach((btn) => {
       btn.addEventListener('click', () => login(btn.dataset.provider));
     });
   } else {
@@ -114,7 +124,7 @@ async function boot() {
   }
 
   // Nav links
-  document.querySelectorAll('.nav-btn[data-view]').forEach(btn => {
+  document.querySelectorAll('.nav-btn[data-view]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const view = btn.dataset.view;
       showView(view);
@@ -131,7 +141,7 @@ async function boot() {
   document.getElementById('modal-confirm').addEventListener('click', () => {
     closeModal('confirm');
   });
-  document.getElementById('modal-overlay').addEventListener('click', e => {
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeModal(null);
   });
 }

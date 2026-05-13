@@ -40,12 +40,14 @@ export function showImport(deckId) {
     </div>`;
 
   // Tab switching
-  document.querySelectorAll('.import-tab').forEach(tab => {
+  document.querySelectorAll('.import-tab').forEach((tab) => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.import-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.import-tab').forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
-      document.getElementById('import-file-panel').style.display = tab.dataset.tab === 'file' ? '' : 'none';
-      document.getElementById('import-paste-panel').style.display = tab.dataset.tab === 'paste' ? '' : 'none';
+      document.getElementById('import-file-panel').style.display =
+        tab.dataset.tab === 'file' ? '' : 'none';
+      document.getElementById('import-paste-panel').style.display =
+        tab.dataset.tab === 'paste' ? '' : 'none';
       resetPreview();
     });
   });
@@ -57,9 +59,12 @@ export function showImport(deckId) {
   zone.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
 
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
   zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
+  zone.addEventListener('drop', (e) => {
     e.preventDefault();
     zone.classList.remove('drag-over');
     handleFile(e.dataTransfer.files[0]);
@@ -71,7 +76,9 @@ export function showImport(deckId) {
     try {
       const data = JSON.parse(raw);
       previewCards(data);
-    } catch { showToast('Invalid JSON — could not parse'); }
+    } catch {
+      showToast('Invalid JSON — could not parse');
+    }
   });
 
   // Confirm import button
@@ -89,10 +96,13 @@ async function handleFile(file) {
     } else {
       // Simple CSV parse (handles quoted fields)
       const lines = text.trim().split('\n');
-      const rows = lines.map(line => parseCsvLine(line));
+      const rows = lines.map((line) => parseCsvLine(line));
       // Skip header if first row is term/definition
-      const start = (rows[0][0]?.toLowerCase() === 'term') ? 1 : 0;
-      const cards = rows.slice(start).filter(r => r.length >= 2).map(r => ({ term: r[0], definition: r[1] }));
+      const start = rows[0][0]?.toLowerCase() === 'term' ? 1 : 0;
+      const cards = rows
+        .slice(start)
+        .filter((r) => r.length >= 2)
+        .map((r) => ({ term: r[0], definition: r[1] }));
       previewCards(cards);
     }
   } catch (err) {
@@ -124,7 +134,7 @@ function previewCards(data) {
     showToast('No valid cards found');
     return;
   }
-  parsedCards = data.filter(r => r.term && r.definition);
+  parsedCards = data.filter((r) => r.term && r.definition);
   if (parsedCards.length === 0) {
     showToast('No cards with both term and definition found');
     return;
@@ -135,12 +145,13 @@ function previewCards(data) {
   previewEl.innerHTML = `
     <table>
       <thead><tr><th>Term</th><th>Definition</th></tr></thead>
-      <tbody>${preview.map(c => `<tr><td>${esc(c.term)}</td><td>${esc(c.definition)}</td></tr>`).join('')}</tbody>
+      <tbody>${preview.map((c) => `<tr><td>${esc(c.term)}</td><td>${esc(c.definition)}</td></tr>`).join('')}</tbody>
     </table>
     ${parsedCards.length > 5 ? `<p style="margin-top:8px;font-size:.85rem;color:var(--color-text-muted)">…and ${parsedCards.length - 5} more</p>` : ''}`;
   previewEl.style.display = '';
 
-  document.getElementById('import-count').textContent = `${parsedCards.length} card${parsedCards.length !== 1 ? 's' : ''} ready to import`;
+  document.getElementById('import-count').textContent =
+    `${parsedCards.length} card${parsedCards.length !== 1 ? 's' : ''} ready to import`;
   document.getElementById('import-actions').style.display = '';
 }
 
@@ -167,5 +178,9 @@ async function doImport() {
 }
 
 function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

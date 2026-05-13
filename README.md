@@ -29,17 +29,17 @@ cp .env.example .env
 
 Edit `.env` with your auth provider values:
 
-| Variable | Description |
-|---|---|
-| `ENTRA_CLIENT_ID` | Application (client) ID from Azure portal |
-| `ENTRA_TENANT_ID` | Directory (tenant) ID from Azure portal |
-| `ENTRA_CLIENT_SECRET` | Client secret from Azure portal |
-| `ENTRA_REDIRECT_URI` | Redirect URI (default: `http://localhost:3000/auth/entra/callback`) |
-| `SESSION_SECRET` | Random string for session encryption |
-| `GOOGLE_CLIENT_ID` | (Optional) Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | (Optional) Google OAuth client secret |
-| `GITHUB_CLIENT_ID` | (Optional) GitHub OAuth app client ID |
-| `GITHUB_CLIENT_SECRET` | (Optional) GitHub OAuth app client secret |
+| Variable               | Description                                                         |
+| ---------------------- | ------------------------------------------------------------------- |
+| `ENTRA_CLIENT_ID`      | Application (client) ID from Azure portal                           |
+| `ENTRA_TENANT_ID`      | Directory (tenant) ID from Azure portal                             |
+| `ENTRA_CLIENT_SECRET`  | Client secret from Azure portal                                     |
+| `ENTRA_REDIRECT_URI`   | Redirect URI (default: `http://localhost:3000/auth/entra/callback`) |
+| `SESSION_SECRET`       | Random string for session encryption                                |
+| `GOOGLE_CLIENT_ID`     | (Optional) Google OAuth client ID                                   |
+| `GOOGLE_CLIENT_SECRET` | (Optional) Google OAuth client secret                               |
+| `GITHUB_CLIENT_ID`     | (Optional) GitHub OAuth app client ID                               |
+| `GITHUB_CLIENT_SECRET` | (Optional) GitHub OAuth app client secret                           |
 
 ### 3. Run
 
@@ -71,6 +71,7 @@ Sessions are stored in SQLite via `connect-sqlite3` so they survive server resta
 ## Import Formats
 
 **CSV** — one card per row, header row optional:
+
 ```csv
 term,definition
 Photosynthesis,The process by which plants convert sunlight to energy
@@ -78,9 +79,13 @@ Mitosis,Cell division producing two identical daughter cells
 ```
 
 **JSON** — array of objects:
+
 ```json
 [
-  { "term": "Photosynthesis", "definition": "The process by which plants convert sunlight to energy" },
+  {
+    "term": "Photosynthesis",
+    "definition": "The process by which plants convert sunlight to energy"
+  },
   { "term": "Mitosis", "definition": "Cell division producing two identical daughter cells" }
 ]
 ```
