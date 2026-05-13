@@ -155,6 +155,22 @@ az containerapp create \
   --env-vars ENTRA_CLIENT_ID=<id> ENTRA_TENANT_ID=<id> ENTRA_REDIRECT_URI=https://<your-app-url>
 ```
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration and deployment.
+
+### Build & Test (`.github/workflows/build-test.yml`)
+
+Runs on every push and PR to `main`. Executes TypeScript build, ESLint, Prettier format check, and Vitest tests.
+
+### Deploy to Azure (`.github/workflows/deploy-to-azure.yml`)
+
+Runs on push to `main` (after build) and manual trigger. Builds a Docker image, pushes it to Azure Container Registry, and deploys to Azure Container Apps. Uses OIDC (workload identity federation) for passwordless Azure authentication.
+
+**Required GitHub Secrets:** `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `ACR_NAME`, `CONTAINER_APP_NAME`, `RESOURCE_GROUP`
+
+**Infrastructure:** Defined in `infra/` using Bicep (Container Apps, ACR, Azure Files, Log Analytics, Managed Identity). Deploy with `azd up` or let the workflow handle it.
+
 ## Project Structure
 
 ```
