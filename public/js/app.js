@@ -1,16 +1,14 @@
 // app.js — main entry point, routing, navigation
 
-import { initAuth, login, logout, getAccount, getToken } from './auth.js';
+import { initAuth, login, logout, getAccount, getAvailableProviders } from './auth.js';
 import { renderDecks } from './decks.js';
 import { renderHistory } from './history.js';
 
 // ---------- Global helpers ----------
 
 export async function apiFetch(path, options = {}) {
-  const token = await getToken();
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res = await fetch(path, { ...options, headers });
+  const res = await fetch(path, { ...options, headers, credentials: 'same-origin' });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `HTTP ${res.status}`);
@@ -58,7 +56,7 @@ function updateAuthUI(account) {
   const appNav = document.getElementById('app-nav');
 
   if (account) {
-    const initials = (account.name || account.username || 'U').slice(0, 2).toUpperCase();
+    const initials = (account.displayName || 'U').slice(0, 2).toUpperCase();
     authArea.innerHTML = `
       <div class="user-chip">
         <div class="user-avatar">${initials}</div>
@@ -78,36 +76,40 @@ function updateAuthUI(account) {
 }
 
 async function handleLogin() {
-  const account = await login();
-  if (account) {
-    updateAuthUI(account);
-    showView('decks');
-    renderDecks();
+  const providers = await getAvailableProviders();
+  const available = Object.entries(providers).filter(([, v]) => v);
+  if (available.length === 1) {
+    login(available[0][0]);
+  } else if (available.length > 1) {
+    // Show provider picker
+    const buttons = available.map(([name]) =>
+      `<button class="btn btn-secondary provider-btn" data-provider="${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</button>`
+    ).join('');
+    document.getElementById('view-landing').innerHTML = `
+      <div class="landing-hero">
+        <h1>Sign in</h1>
+        <p>Choose a provider:</p>
+        <div class="provider-list">${buttons}</div>
+      </div>`;
+    document.querySelectorAll('.provider-btn').forEach(btn => {
+      btn.addEventListener('click', () => login(btn.dataset.provider));
+    });
+  } else {
+    login('entra');
   }
 }
 
 // ---------- Boot ----------
 
 async function boot() {
-  // Load Entra config from server
-  const config = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+  const account = await initAuth();
 
-  if (config.clientId) {
-    const account = await initAuth(config);
+  if (account) {
     updateAuthUI(account);
-    if (account) {
-      showView('decks');
-      renderDecks();
-    } else {
-      showView('landing');
-    }
+    showView('decks');
+    renderDecks();
   } else {
-    // No MSAL config — show banner
-    document.getElementById('view-landing').innerHTML = `
-      <div class="landing-hero">
-        <h1>⚠️ Not configured</h1>
-        <p>Copy <code>.env.example</code> to <code>.env</code> and add your Entra app credentials, then restart the server.</p>
-      </div>`;
+    updateAuthUI(null);
     showView('landing');
   }
 

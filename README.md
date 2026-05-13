@@ -9,7 +9,7 @@ A mobile-first study card web app — create decks of cards, flip through them, 
 - **Quiz Mode** — Test yourself and track your score
 - **Import** — Bulk-import cards from CSV or JSON
 - **History** — Review past study sessions and quiz scores
-- **Auth** — Sign in with your Microsoft account (Entra ID / MSAL)
+- **Auth** — Sign in with Microsoft Entra ID, Google, or GitHub (Passport.js multi-provider)
 
 ## Quick Start
 
@@ -27,13 +27,19 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` with your Entra app registration values:
+Edit `.env` with your auth provider values:
 
 | Variable | Description |
 |---|---|
 | `ENTRA_CLIENT_ID` | Application (client) ID from Azure portal |
 | `ENTRA_TENANT_ID` | Directory (tenant) ID from Azure portal |
-| `ENTRA_REDIRECT_URI` | Redirect URI (default: `http://localhost:3000`) |
+| `ENTRA_CLIENT_SECRET` | Client secret from Azure portal |
+| `ENTRA_REDIRECT_URI` | Redirect URI (default: `http://localhost:3000/auth/entra/callback`) |
+| `SESSION_SECRET` | Random string for session encryption |
+| `GOOGLE_CLIENT_ID` | (Optional) Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | (Optional) Google OAuth client secret |
+| `GITHUB_CLIENT_ID` | (Optional) GitHub OAuth app client ID |
+| `GITHUB_CLIENT_SECRET` | (Optional) GitHub OAuth app client secret |
 
 ### 3. Run
 
@@ -43,13 +49,24 @@ npm start
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Authentication
+
+This app uses **Passport.js** with server-side OAuth redirects and session cookies (replacing the previous client-side MSAL popup flow). Supported providers:
+
+- **Microsoft Entra ID** (primary) — requires `ENTRA_CLIENT_ID`, `ENTRA_TENANT_ID`, `ENTRA_CLIENT_SECRET`
+- **Google** (optional) — requires `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+- **GitHub** (optional) — requires `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`
+
+Sessions are stored in SQLite via `connect-sqlite3` so they survive server restarts.
+
 ## Entra App Registration
 
 1. Go to [Azure Portal → App registrations](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps)
 2. New registration → name it, choose your tenant type
-3. Add redirect URI: `http://localhost:3000` (type: Single-page application)
-4. Copy **Application (client) ID** and **Directory (tenant) ID** into `.env`
-5. Under **API permissions**, add `User.Read` (Microsoft Graph, delegated)
+3. Add redirect URI: `http://localhost:3000/auth/entra/callback` (type: Web)
+4. Under **Certificates & secrets**, create a new client secret and copy it to `ENTRA_CLIENT_SECRET`
+5. Copy **Application (client) ID** and **Directory (tenant) ID** into `.env`
+6. Under **API permissions**, add `User.Read` (Microsoft Graph, delegated)
 
 ## Import Formats
 
@@ -140,7 +157,7 @@ az containerapp create \
 │   ├── index.js    Entry point
 │   ├── db.js       Schema & migrations
 │   ├── routes/     decks, cards, quiz, import, history
-│   └── middleware/ JWT auth
+│   └── middleware/ Passport session auth
 ├── public/         Vanilla HTML/CSS/JS frontend
 │   ├── index.html
 │   ├── css/
